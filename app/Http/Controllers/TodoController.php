@@ -26,7 +26,25 @@ class TodoController extends Controller
 
     public function store(Request $request)
     {
-        //
+        try {
+            $data = TodoModel::create([
+                'title' => $request->title,
+                'description' => $request->description,
+                'date' => $request->date,
+                'created_by' => 'Anon',
+                'updated_at' => null
+            ]);
+            return response()->json([
+                'status' => true,
+                'data' => $data,
+                'messages' => 'Inserted Successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'messages' => $e->getMessage()
+            ]);
+        }
     }
 
     public function show($pid)
