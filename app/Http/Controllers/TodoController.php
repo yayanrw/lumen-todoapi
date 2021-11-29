@@ -50,7 +50,7 @@ class TodoController extends Controller
     public function show($pid)
     {
         try {
-            $data = TodoModel::where('pid', $pid)->get();
+            $data = TodoModel::where('pid', $pid)->first();
 
             if ($data->count() > 0) {
                 return response()->json([
@@ -74,7 +74,35 @@ class TodoController extends Controller
 
     public function update(Request $request, $pid)
     {
-        //
+        try {
+            $data = TodoModel::where('pid', $pid)->first();
+
+            if ($data->count() > 0) {
+                $update = TodoModel::where('pid', $pid)
+                    ->update([
+                        'title' => $request->title,
+                        'description' => $request->description,
+                        'date' => $request->date,
+                        'updated_by' => 'Anon',
+                    ]);
+
+                return response()->json([
+                    'status' => true,
+                    'data' => $update,
+                    'messages' => 'Updated Successfully'
+                ]);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'messages' => 'Data not found'
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'messages' => $e->getMessage()
+            ]);
+        }
     }
 
     public function destroy($pid)
